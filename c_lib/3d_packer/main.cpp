@@ -50,7 +50,9 @@ void __cdecl report_results(void);
 
 char str_p_x[5], str_p_y[5], str_p_z[5];
 char str_co_x[5], str_co_y[5], str_co_z[5];
-char str_pack_x[5], str_pack_y[5], str_pack_z[5];
+char str_SKU[SKU_size];
+char str_weight[5];
+char str_pack_x[5], str_pack_y[5], str_pack_z[5], str_pack_w[5];
 
 char *filename = NULL;
 char packing;
@@ -106,6 +108,7 @@ struct boxinfo {
 	char is_packed;
 	short int dim1, dim2, dim3, n, co_x, co_y, co_z, pack_x, pack_y, pack_z;
 	char SKU[SKU_size] = { 0 }; // Yes, not cleanin' all char array, but nevermind
+	int weight;
 	long int volume;
 } boxlist[5000];
 
@@ -189,7 +192,7 @@ void read_input_file(void)
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
 	short int n;
 	//TODO: Robustify this so the box label can be larger and have spaces
-	char lbl[5], dim1[5], dim2[5], dim3[5], boxn[5], strxx[5], stryy[5], strzz[5];
+	char lbl[SKU_size], dim1[5], dim2[5], dim3[5], str_w[5], box_n[5], str_xx[5], str_yy[5], str_zz[5];
 
 	if ((boxlist_input_file = fopen(filename, "r")) == NULL)
 	{
@@ -198,30 +201,34 @@ void read_input_file(void)
 	}
 	all_boxes = 1;
 
-	if (fscanf(boxlist_input_file, "%s %s %s", strxx, stryy, strzz) == EOF)
+	if (fscanf(boxlist_input_file, "%s %s %s", str_xx, str_yy, str_zz) == EOF)
 	{
 		exit(1);
 	}
 
-	xx = atoi(strxx);
-	yy = atoi(stryy);
-	zz = atoi(strzz);
+	xx = atoi(str_xx);
+	yy = atoi(str_yy);
+	zz = atoi(str_zz);
 
-	while (fscanf(boxlist_input_file, "%s %s %s %s %s", lbl, dim1, dim2, dim3, boxn) != EOF)
+	while (fscanf(boxlist_input_file, "%s %s %s %s %s %s", lbl, dim1, dim2, dim3, str_w, box_n) != EOF)
 	{
 		boxlist[all_boxes].dim1 = atoi(dim1);
 		boxlist[all_boxes].dim2 = atoi(dim2);
 		boxlist[all_boxes].dim3 = atoi(dim3);
+		boxlist[all_boxes].weight = atoi(str_w);
+
+		// Add SKU label
+		strncpy(boxlist[all_boxes].SKU, lbl, SKU_size);
 
 		boxlist[all_boxes].volume = boxlist[all_boxes].dim1 * boxlist[all_boxes].dim2 * boxlist[all_boxes].dim3;
-		n = atoi(boxn);
+		n = atoi(box_n);
 		boxlist[all_boxes].n = n;
 
 		while (--n)
 		{
 			boxlist[all_boxes + n] = boxlist[all_boxes];
 		}
-		all_boxes = all_boxes + atoi(boxn);
+		all_boxes = all_boxes + atoi(box_n);
 	}
 	--all_boxes;
 	fclose(boxlist_input_file);
@@ -1070,27 +1077,31 @@ void write_visualization_data_file(void)
 	char n[5];
 	if (!unpacked)
 	{
+		sprintf(str_SKU, "%s", boxlist[current_box_i].SKU);
 		sprintf(str_co_x, "%d", boxlist[current_box_i].co_x);
 		sprintf(str_co_y, "%d", boxlist[current_box_i].co_y);
 		sprintf(str_co_z, "%d", boxlist[current_box_i].co_z);
 		sprintf(str_pack_x, "%d", boxlist[current_box_i].pack_x);
 		sprintf(str_pack_y, "%d", boxlist[current_box_i].pack_y);
 		sprintf(str_pack_z, "%d", boxlist[current_box_i].pack_z);
+		sprintf(str_weight, "%d", boxlist[current_box_i].weight);
 	}
 	else
 	{
-		sprintf(n, "%d", current_box_i);
+		sprintf(str_SKU, "%s", boxlist[current_box_i].SKU);
 		sprintf(str_pack_x, "%d", boxlist[current_box_i].dim1);
 		sprintf(str_pack_y, "%d", boxlist[current_box_i].dim2);
 		sprintf(str_pack_z, "%d", boxlist[current_box_i].dim3);
+		sprintf(str_pack_w, "%d", boxlist[current_box_i].weight);
+		// Add 1
 	}
 	if (!unpacked)
 	{
-		fprintf(visualizer_file, "[%5s, %5s, %5s, %5s, %5s, %5s],\n ", str_co_x, str_co_y, str_co_z, str_pack_x, str_pack_y, str_pack_z);
+		fprintf(visualizer_file, "[\"%8s\", %5s, %5s, %5s, %5s, %5s, %5s, %5s],\n ", str_SKU, str_co_x, str_co_y, str_co_z, str_pack_x, str_pack_y, str_pack_z, str_weight);
 	}
 	else
 	{
-		fprintf(report_output_file, "%5s%5s%5s%5s\n", n, str_pack_x, str_pack_y, str_pack_z);
+		fprintf(report_output_file, "\"%8s\", %5s, %5s, %5s, %5s\n", str_SKU, str_pack_x, str_pack_y, str_pack_z, str_pack_w);
 	}
 }
 
@@ -1254,7 +1265,7 @@ void report_results(void)
 	sprintf(str_p_y, "%d", pallet_y);
 	sprintf(str_p_z, "%d", pallet_z);
 
-	// Some terrible json formatter
+	// Some terrible json formatter, just for science (mvp)
 	fprintf(visualizer_file, "{\n \"pallet\" : {\n \"pallet_x\" : %5s,\n \"pallet_y\" : %5s,\n \"pallet_z\" : %5s\n },\n \"boxes\" : [\n ", str_p_x, str_p_y, str_p_z);
 	strcat(filename, ".out");
 
@@ -1268,9 +1279,6 @@ void report_results(void)
 	pallet_volume_used_percentage = best_solution_volume * 100 / total_pallet_volume;
 	calc_time = difftime(finish, start);
 
-	fprintf(report_output_file, "---------------------------------------------------------------------------------------------\n");
-	fprintf(report_output_file, "                                       *** REPORT ***\n");
-	fprintf(report_output_file, "---------------------------------------------------------------------------------------------\n");
 	fprintf(report_output_file, "ELAPSED TIME                                          : Almost %.0f sec\n", calc_time);
 	fprintf(report_output_file, "TOTAL NUMBER OF ITERATIONS DONE                       : %d\n", number_of_iterations);
 	fprintf(report_output_file, "BEST SOLUTION FOUND AT ITERATION                      : %d OF VARIANT: %d\n", best_iteration, best_variant);
@@ -1325,7 +1333,7 @@ void report_results(void)
 		find_layer(remain_p_y);
 	} while (packing);
 
-	fprintf(report_output_file, "\n\n *** LIST OF UNPACKED BOXES ***\n");
+	fprintf(report_output_file, "\n\nLIST OF UNPACKED BOXES\n");
 	unpacked = 1;
 
 	for (current_box_i = 1; current_box_i <= all_boxes; current_box_i++)
@@ -1333,6 +1341,22 @@ void report_results(void)
 		if (!boxlist[current_box_i].is_packed)
 		{
 			write_visualization_data_file();
+
+			sprintf(str_SKU, "%s", boxlist[current_box_i].SKU);
+			sprintf(str_pack_x, "%d", boxlist[current_box_i].dim1);
+			sprintf(str_pack_y, "%d", boxlist[current_box_i].dim2);
+			sprintf(str_pack_z, "%d", boxlist[current_box_i].dim3);
+			sprintf(str_pack_w, "%d", boxlist[current_box_i].weight);
+			// Add 1
+
+			if (!unpacked)
+			{
+				fprintf(visualizer_file, "[\"%8s\", %5s, %5s, %5s, %5s, %5s, %5s, %5s],\n ", str_SKU, str_co_x, str_co_y, str_co_z, str_pack_x, str_pack_y, str_pack_z, str_weight);
+			}
+			else
+			{
+				fprintf(report_output_file, "\"%8s\", %5s, %5s, %5s, %5s\n", str_SKU, str_pack_x, str_pack_y, str_pack_z, str_pack_w);
+			}
 		}
 	}
 
