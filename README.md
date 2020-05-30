@@ -14,7 +14,7 @@ Some info about our cool project.
 
 *Packy* hasn't installation version, just script launch. And supports **only x32** Python 3.
 
-All `.dll` and `.so` already precompiled, but you may do it [yourself](#Compile all library).
+All `.dll` and `.so` already precompiled, but you may do it [yourself](#compile-library).
 
 ### Windows
 
