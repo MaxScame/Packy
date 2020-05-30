@@ -1,13 +1,14 @@
 # Packy📦
 
-Some info about our cool project.
-
+Some info about our project.
+3D Bin Packing Algorithm, special for **Hack In Home** Hackathon 2020, KSU MSTU Stankin
+Track: for BoschRexroth
 
 
 ## Features
 
 - EB-AFIT Pallet Loading Algorithm
-- REST API
+- Simple JSON export
 - Documentation `(!)`
 
 ## Usage
@@ -62,13 +63,13 @@ g++ -shared -Wl,-soname,3d_packer -o 3d_packer.so -fPIC main.c
 ## TODO
 
 - [x] Transferring the computation to a low-level language (`C/C++`)
+- [x] x64 support
+- [x] Report generation
 - [ ] Options window
 - [ ] 3D visualization
 - [ ] Support of box weight
-- [ ] Report generation
 - [ ] Report history
 - [ ] Prettify design
-- [ ] HTTPS
 - [ ] Non-metric system support
 - [ ] `Chill👌`
 
