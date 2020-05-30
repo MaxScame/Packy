@@ -277,3 +277,5 @@ __pycache__/
 ~3d
 *.~3d
 *.txt.out
+*.exp
+*.lib

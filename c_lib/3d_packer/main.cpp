@@ -64,6 +64,7 @@ char packing_best;
 char hundred_percent;
 char graphout[] = ".~3d";
 char unpacked;
+char *not_included_list[];
 
 short int box_x, box_y, box_z, box_i;
 short int b_box_x, b_box_y, b_box_z, b_box_i;
@@ -1074,7 +1075,6 @@ void volume_check(void)
 void write_visualization_data_file(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
-	char n[5];
 	if (!unpacked)
 	{
 		sprintf(str_SKU, "%s", boxlist[current_box_i].SKU);
@@ -1104,6 +1104,20 @@ void write_visualization_data_file(void)
 		fprintf(report_output_file, "\"%8s\", %5s, %5s, %5s, %5s\n", str_SKU, str_pack_x, str_pack_y, str_pack_z, str_pack_w);
 	}
 }
+
+void write_visualization_data_file_not_packed(void)
+{
+#pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
+	sprintf(str_SKU, "%s", boxlist[current_box_i].SKU);
+	sprintf(str_pack_x, "%d", boxlist[current_box_i].dim1);
+	sprintf(str_pack_y, "%d", boxlist[current_box_i].dim2);
+	sprintf(str_pack_z, "%d", boxlist[current_box_i].dim3);
+	sprintf(str_pack_w, "%d", boxlist[current_box_i].weight);
+	// And add 1
+	fprintf(visualizer_file, "[\"%8s\", %5s, %5s, %5s, %5s, 1],\n ", str_SKU, str_pack_x, str_pack_y, str_pack_z, str_pack_w);
+
+}
+
 
 //----------------------------------------------------------------------------
 // TRANSFORMS THE FOUND COORDINATE SYSTEM TO THE ONE ENTERED BY THE USER AND
@@ -1341,22 +1355,17 @@ void report_results(void)
 		if (!boxlist[current_box_i].is_packed)
 		{
 			write_visualization_data_file();
+		}
+	}
 
-			sprintf(str_SKU, "%s", boxlist[current_box_i].SKU);
-			sprintf(str_pack_x, "%d", boxlist[current_box_i].dim1);
-			sprintf(str_pack_y, "%d", boxlist[current_box_i].dim2);
-			sprintf(str_pack_z, "%d", boxlist[current_box_i].dim3);
-			sprintf(str_pack_w, "%d", boxlist[current_box_i].weight);
-			// Add 1
+	unpacked = 0;
+	fprintf(visualizer_file, "[]\n ],\n \"not_packed\" : [\n ");
 
-			if (!unpacked)
-			{
-				fprintf(visualizer_file, "[\"%8s\", %5s, %5s, %5s, %5s, %5s, %5s, %5s],\n ", str_SKU, str_co_x, str_co_y, str_co_z, str_pack_x, str_pack_y, str_pack_z, str_weight);
-			}
-			else
-			{
-				fprintf(report_output_file, "\"%8s\", %5s, %5s, %5s, %5s\n", str_SKU, str_pack_x, str_pack_y, str_pack_z, str_pack_w);
-			}
+	for (current_box_i = 1; current_box_i <= all_boxes; current_box_i++)
+	{
+		if (!boxlist[current_box_i].is_packed)
+		{
+			write_visualization_data_file_not_packed();
 		}
 	}
 
