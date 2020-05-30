@@ -269,6 +269,7 @@ void execute_iterations(void)
 		//	break;
 		//}
 
+		// sick!
 		switch (variant)
 		{
 		case 1: // Default
@@ -278,6 +279,8 @@ void execute_iterations(void)
 			pallet_x = yy; pallet_y = xx; pallet_z = zz;
 			break;
 		}
+
+		
 
 		list_candidate_layers();
 		layers[0].layer_eval = -1;
@@ -850,6 +853,7 @@ void find_box(short int hmx, short int hy, short int hmy, short int hz, short in
 		//analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim2, boxlist[x].dim3, boxlist[x].dim1);
 		//analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim3, boxlist[x].dim1, boxlist[x].dim2);
 		//analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim3, boxlist[x].dim2, boxlist[x].dim1);
+
 	}
 }
 
@@ -1187,6 +1191,7 @@ void write_boxlist_file(void)
 		break;
 	}*/
 
+	// sick!
 	switch (best_variant)
 	{
 	case 1:
@@ -1259,6 +1264,8 @@ void report_results(void)
 	//	break;
 	//}
 	
+
+	// sick!
 	switch (best_variant)
 	{
 	case 1:
@@ -1268,6 +1275,8 @@ void report_results(void)
 		pallet_x = yy; pallet_y = xx; pallet_z = zz;
 		break;
 	}
+
+
 	packing_best = 1;
 	if ((visualizer_file = fopen(graphout, "w")) == NULL)
 	{
