@@ -53,23 +53,21 @@ g++ -shared -Wl,-soname,3d_packer -o 3d_packer.so -fPIC main.c
 
 #### Back-end: `Python 3, Flask, Jinja 2`
 
-#### Front-end: `JS (D3, jQuery)`
-
 ## Our Team
 
-Sovsem ne duraki
+- Maxim N.
+- Maxim S.
+- Roman K.
 
 ## TODO
 
 - [x] Transferring the computation to a low-level language (`C/C++`)
-- [ ] Options window on the page
+- [ ] Options window
 - [ ] 3D visualization
 - [ ] Support of box weight
 - [ ] Report generation
 - [ ] Report history
 - [ ] Prettify design
-- [ ] x64 architecture
-- [ ] Docker support
 - [ ] HTTPS
 - [ ] Non-metric system support
 - [ ] `Chill👌`

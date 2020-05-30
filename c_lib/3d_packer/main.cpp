@@ -139,7 +139,7 @@ int run(char* param_filename)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
 
-	// TODO: Add rusiiasn lang support
+	// TODO: Add russian lang support
 
 
 	//Parse Command line options
@@ -291,7 +291,7 @@ void execute_iterations(void)
 			++number_of_iterations;
 			time(&finish);
 			calc_time = difftime(finish, start);
-			printf("VARIANT: %5d; ITERATION (TOTAL): %5d; BEST SO FAR: %.3f %%; TIME: %.0f", variant, number_of_iterations, pallet_volume_used_percentage, calc_time);
+			// printf("VARIANT: %5d; ITERATION (TOTAL): %5d; BEST SO FAR: %.3f %%; TIME: %.0f", variant, number_of_iterations, pallet_volume_used_percentage, calc_time);
 			packed_volume = 0.0;
 			packed_y = 0;
 			packing = 1;
@@ -1382,22 +1382,20 @@ void report_results(void)
 	fclose(report_output_file);
 	fprintf(visualizer_file, "[]\n ]\n}");
 	fclose(visualizer_file);
-	printf("\n");
+	printf("\nPACKED BOXES IN PALLET\n");
+	printf("  No.    Size (3 Dim);      Corner Coords;     Axis Lenght;   Weight\n");
 	for (n = 1; n <= all_boxes; n++)
 	{
 		if (boxlist[n].is_packed)
 		{
-			printf("%d. %d %d %d; %d %d %d; %d %d %d\n", n, boxlist[n].dim1, boxlist[n].dim2, boxlist[n].dim3, boxlist[n].co_x, boxlist[n].co_y, boxlist[n].co_z, boxlist[n].pack_x, boxlist[n].pack_y, boxlist[n].pack_z);
+			printf("%4d. %5d %5d %5d; %5d %5d %5d; %5d %5d %5d; %5d\n", n, boxlist[n].dim1, boxlist[n].dim2, boxlist[n].dim3, boxlist[n].co_x, boxlist[n].co_y, boxlist[n].co_z, boxlist[n].pack_x, boxlist[n].pack_y, boxlist[n].pack_z, boxlist[n].weight);
 		}
 	}
-	printf("ELAPSED TIME                       : Almost %.0f sec\n", calc_time);
-	printf("TOTAL NUMBER OF ITERATIONS DONE    : %d\n", number_of_iterations);
-	printf("BEST SOLUTION FOUND AT             : ITERATION: %d OF VARIANT: %d\n", best_iteration, best_variant);
+	printf("ELAPSED TIME                       : ~%.0f sec\n", calc_time);
 	printf("TOTAL NUMBER OF BOXES              : %d\n", all_boxes);
 	printf("PACKED NUMBER OF BOXES             : %d\n", number_packed_boxes);
 	printf("TOTAL VOLUME OF ALL BOXES          : %.0f\n", total_box_volume);
 	printf("PALLET VOLUME                      : %.0f\n", total_pallet_volume);
-	printf("BEST SOLUTION'S VOLUME UTILIZATION : %.0f OUT OF %.0f\n", best_solution_volume, total_pallet_volume);
 	printf("PERCENTAGE OF PALLET VOLUME USED   : %.6f %%\n", pallet_volume_used_percentage);
 	printf("PERCENTAGE OF PACKED BOXES (VOLUME): %.6f%%\n", packed_box_percentage);
 	printf("WHILE PALLET ORIENTATION           : X = %d; Y = %d; Z = %d\n", pallet_x, pallet_y, pallet_z);
