@@ -80,6 +80,36 @@ python3 packy.py
 
 The result of the program will be the creation of Excel reports in the *Report* folder for humans, as well as the creation of .~3d reports for robots in *Robot* folder. 
 
+## Project structure
+
+```
+Packy:
+│   Presentation.pdf
+│   README.pdf
+│
+├───c_lib                            // C lib VS2019 project folder
+│   │   3d_packer.sln
+│   │   name_mangling.cmd            // Check func name in dll
+│   │
+│   └───3d_packer                    // C lib source
+│           main.cpp
+│
+├───doc                          
+│       AirForceBinPacking.pdf       // Original document (algorithm)
+│
+└───python_packy                     // Python folder (Main folder)
+    │   3d_packer.dll                // DLL lib
+    │   3d_packer64.dll
+    │   box.txt                      // Config file
+    │   EB_AFIT_core.py              // C lib wrapper module
+    │   json_view.py                 // Viewer for json file (In Robot folder)
+    │   packy.py                     // Main python script
+    │   xl.xlsx                      // Template for human's report
+    │
+    ├───Report                       // Reports folder for human
+    └───Robot                        // Reports folder for robot
+```
+
 ## Compile library
 
 ### Windows
