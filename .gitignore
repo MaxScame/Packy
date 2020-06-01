@@ -279,3 +279,4 @@ __pycache__/
 *.txt.out
 *.exp
 *.lib
+Pallet_*.*

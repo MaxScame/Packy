@@ -15,4 +15,3 @@ Calculate data from file
 def calc(filename='boxlist.txt'):
     data_filename = c_char_p(filename.encode())
     res = start(data_filename)
-

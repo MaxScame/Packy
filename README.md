@@ -21,6 +21,8 @@ Track: from Partner *BoschRexroth*.
 
 *Packy* hasn't installation version, just script launch. And supports **only** Python 3.
 
+> If you want to use x64 version of lib, delete from dll name "64" or change it in python script
+
 Put the `box.txt` file with the format content into the script folder:
 
 ```
