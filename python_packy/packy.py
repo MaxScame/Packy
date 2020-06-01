@@ -111,3 +111,4 @@ while len(templates['not_packed']) >1 :
 
 os.remove("boxes.txt")
 os.remove("boxlist.txt")
+os.remove(".~3d")

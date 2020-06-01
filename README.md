@@ -1,21 +1,60 @@
 # Packy📦
 
-Some info about our project.
-3D Bin Packing Algorithm, special for **Hack In Home** Hackathon 2020, KSU MSTU Stankin
-Track: for BoschRexroth
+<img src="doc/packy_logo.png" style="zoom:7%;" />
+
+3D Bin Packing Algorithm, based on [AB-AFIT](doc/AirForceBinPacking.pdf) with some changes for a specific task. 
+
+Special for *Hack In Home* Hackathon 2020, KSU MSTU Stankin.
+
+Track: from Partner *BoschRexroth*.
 
 
 ## Features
 
-- EB-AFIT Pallet Loading Algorithm
-- Simple JSON export
-- Documentation `(!)`
+- Modified EB-AFIT Pallet Loading Algorithm (No box flip on the side or upside down, support SKU and limited weight support )
+- Simple *JSON* export for robots🤖 and *Excel* document for human👷🏽
+- **No **platform dependencies
+- **No **dependence on third-party libraries
+- **No **dependencies on the compiler (library *C* code can be compiled by any compiler)
 
 ## Usage
 
-*Packy* hasn't installation version, just script launch. And supports **only x32** Python 3.
+*Packy* hasn't installation version, just script launch. And supports **only** Python 3.
 
-All `.dll` and `.so` already precompiled, but you may do it [yourself](#compile-library).
+Put the `box.txt` file with the format content into the script folder:
+
+```
+Pallet_X, Pallet_Y, Pallet_Z
+SKU_NUM BOX_X, BOX_Y, BOX_Z, BOX_WEIGHT, BOX_COUNT
+...
+```
+
+`Pallet_(XYZ)` - size of pallet (<5 symbols)
+
+`SKU_NUM` - SKU in database (7 symbols)
+
+`BOX_(XYZ)` - size of box (<5 symbols)
+
+`BOX_WEIGHT` - weight of one box with that SKU (<5 symbols)
+
+`BOX_COUNT` - number of boxes to be packed (<5 symbols)
+
+> **Note**: The Y-axis is directed upwards from the plane of the pallet floor.
+
+<img src="doc/Axis.png" alt="Axis in Packy" style="zoom:80%;" />
+
+**Example:**
+
+```
+111, 112, 113
+SKU1231 70, 104, 24, 9000, 20
+SKU7682 14, 104, 48, 2000, 10
+SKU5723 40, 52, 37, 500, 10
+SKU7777 58, 13, 89, 2000, 5
+SKU4432 12, 13, 44, 890, 6
+```
+
+----
 
 ### Windows
 
@@ -23,7 +62,9 @@ All `.dll` and `.so` already precompiled, but you may do it [yourself](#compile-
 python packy.py
 ```
 
-Linux now is not much tested, but you may try
+> All `.dll` already precompiled, but you may do it [yourself](#compile-library). Not support  `.so` now :(  
+
+Linux now is not tested, but you may try it by pre-compiling the library
 
 ### Linux
 
@@ -31,9 +72,13 @@ Linux now is not much tested, but you may try
 python3 packy.py
 ```
 
-## Compile library
+----
 
-**TL;DR:**
+#### Result
+
+The result of the program will be the creation of Excel reports in the *Report* folder for humans, as well as the creation of .~3d reports for robots in *Robot* folder. 
+
+## Compile library
 
 ### Windows
 
@@ -50,27 +95,28 @@ g++ -shared -Wl,-soname,3d_packer -o 3d_packer.so -fPIC main.c
 
 ## Stack of technology
 
-#### Algorithm: `C/C++`
+#### Algorithm: `C (wrap in C++)`
 
-#### Back-end: `Python 3, Flask, Jinja 2`
+#### Back-end: `Python 3`
 
 ## Our Team
 
-- Maxim N.
-- Maxim S.
-- Roman K.
+- **Maxim Nenarokomov**, PM, Lead Dev (C/C++, Python), `IDB-16-16`
+- **Maxim Solodkov**, Dev (Python), Designer, `IDB-16-17`
+- **Roman Krekoten'**, Dev (Python), Designer,  `IDB-16-16`
 
 ## TODO
 
 - [x] Transferring the computation to a low-level language (`C/C++`)
 - [x] x64 support
 - [x] Report generation
+- [x] Support of box weight
 - [ ] Options window
 - [ ] 3D visualization
-- [ ] Support of box weight
+- [ ] Calculate pallet weight
 - [ ] Report history
 - [ ] Prettify design
-- [ ] Non-metric system support
+- [ ] Non-metric system support (`Make sense only for GUI version`)
 - [ ] `Chill👌`
 
 Thanks

@@ -1,8 +1,3 @@
-
-//----------------------------------------------------------------------------
-// INCLUDED HEADER FILES
-//----------------------------------------------------------------------------
-
 #define _CRT_SECURE_NO_WARNINGS
 
 extern "C"
@@ -14,23 +9,16 @@ extern "C"
 #include <stdlib.h>
 #include <locale.h>
 
-//----------------------------------------------------------------------------
-// DEFINES
-//----------------------------------------------------------------------------
-
 #define TRUE 1
 #define FALSE 0
 
 #define SKU_size 8
 
-//----------------------------------------------------------------------------
-// FUNCTION PROTOTYPES
-//----------------------------------------------------------------------------
 
 
 void __cdecl initialize(void);
 void __cdecl read_input_file(void);
-void __cdecl execute_iterations(void); //TODO: Needs a better name yet
+void __cdecl execute_iterations(void);
 void __cdecl list_candidate_layers(void);
 int __cdecl compute_layer_list(const void* i, const void* j);
 int __cdecl pack_layer(void);
@@ -38,15 +26,13 @@ int __cdecl find_layer(short int thickness);
 void __cdecl find_box(short int hmx, short int hy, short int hmy, short int hz, short int hmz);
 void __cdecl analyze_box(short int hmx, short int hy, short int hmy, short int hz, short int hmz, short int dim1, short int dim2, short int dim3);
 void __cdecl find_smallest_z(void);
-void __cdecl check_if_found(void); //TODO: Find better name for this
+void __cdecl check_if_found(void);
 void __cdecl volume_check(void);
 void __cdecl write_visualization_data_file(void);
 void __cdecl write_boxlist_file(void);
 void __cdecl report_results(void);
 
-//----------------------------------------------------------------------------
-// VARIABLE, CONSTANT AND STRUCTURE DECLARATIONS
-//----------------------------------------------------------------------------
+
 
 char str_p_x[5], str_p_y[5], str_p_z[5];
 char str_co_x[5], str_co_y[5], str_co_z[5];
@@ -105,18 +91,19 @@ double pallet_volume_used_percentage;
 double packed_box_percentage;
 double calc_time;
 
+
 struct boxinfo {
 	char is_packed;
 	short int dim1, dim2, dim3, n, co_x, co_y, co_z, pack_x, pack_y, pack_z;
 	char SKU[SKU_size] = { 0 }; // Yes, not cleanin' all char array, but nevermind
 	int weight;
 	long int volume;
-} boxlist[5000];
+} boxlist[5000]; // Limit 5k
 
 struct layerlist {
 	long int layer_eval;
 	short int layer_dim;
-} layers[1000];
+} layers[1000]; // Limit 1k
 
 struct scrappad {
 	struct scrappad* prev, * next;
@@ -131,16 +118,13 @@ FILE *boxlist_input_file, *report_output_file, *visualizer_file; // File descrip
 
 char version[] = "0.03 dynamic lib version"; // With dopil:)
 
-//----------------------------------------------------------------------------
-// MAIN PROGRAM
-//----------------------------------------------------------------------------
 
+// Lauch func
 int run(char* param_filename)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
 
-	// TODO: Add russian lang support
-
+	// TODO: Add russian lang support, but not now
 
 	//Parse Command line options
 	memcpy ( &filename, &param_filename, sizeof(param_filename) );
@@ -154,10 +138,8 @@ int run(char* param_filename)
 	return(0);
 }
 
-//----------------------------------------------------------------------------
-// PERFORMS INITIALIZATIONS
-//----------------------------------------------------------------------------
 
+// Init
 void initialize(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -184,10 +166,8 @@ void initialize(void)
 	number_of_iterations = 0;
 }
 
-//----------------------------------------------------------------------------
-// READS THE PALLET AND BOX SET DATA ENTERED BY THE USER FROM THE INPUT FILE
-//----------------------------------------------------------------------------
 
+// Read input file (now: copy of box.txt)
 void read_input_file(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -216,7 +196,7 @@ void read_input_file(void)
 		boxlist[all_boxes].dim1 = atoi(dim1);
 		boxlist[all_boxes].dim2 = atoi(dim2);
 		boxlist[all_boxes].dim3 = atoi(dim3);
-		boxlist[all_boxes].weight = atoi(str_w);
+		boxlist[all_boxes].weight = atoi(str_w); // Add Weight
 
 		// Add SKU label
 		strncpy(boxlist[all_boxes].SKU, lbl, SKU_size);
@@ -236,38 +216,14 @@ void read_input_file(void)
 	return;
 }
 
-//----------------------------------------------------------------------------
-// ITERATIONS ARE DONE AND PARAMETERS OF THE BEST SOLUTION ARE FOUND
-//----------------------------------------------------------------------------
 
+// If iterations are done and found best solution
 void execute_iterations(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
 	short int for_counter = 2; // May be 6 if all variants is relevant
 	for (variant = 1; variant <= for_counter; variant++)
 	{
-		// Need some lock variants
-		//switch (variant)
-		//{
-		//case 1:
-		//	pallet_x = xx; pallet_y = yy; pallet_z = zz;
-		//	break;
-		//case 2:
-		//	pallet_x = zz; pallet_y = yy; pallet_z = xx;
-		//	break;
-		//case 3:
-		//	pallet_x = zz; pallet_y = xx; pallet_z = yy;
-		//	break;
-		//case 4:
-		//	pallet_x = yy; pallet_y = xx; pallet_z = zz;
-		//	break;
-		//case 5:
-		//	pallet_x = xx; pallet_y = zz; pallet_z = yy;
-		//	break;
-		//case 6:
-		//	pallet_x = yy; pallet_y = zz; pallet_z = xx;
-		//	break;
-		//}
 
 		// sick!
 		switch (variant)
@@ -276,7 +232,7 @@ void execute_iterations(void)
 			pallet_x = xx; pallet_y = yy; pallet_z = zz;
 			break;
 		case 2: // Rotate 90
-			pallet_x = yy; pallet_y = xx; pallet_z = zz;
+			pallet_x = zz; pallet_y = yy; pallet_z = xx;
 			break;
 		}
 
@@ -291,6 +247,8 @@ void execute_iterations(void)
 			++number_of_iterations;
 			time(&finish);
 			calc_time = difftime(finish, start);
+
+			// sick!
 			// printf("VARIANT: %5d; ITERATION (TOTAL): %5d; BEST SO FAR: %.3f %%; TIME: %.0f", variant, number_of_iterations, pallet_volume_used_percentage, calc_time);
 			packed_volume = 0.0;
 			packed_y = 0;
@@ -356,10 +314,8 @@ void execute_iterations(void)
 	}
 }
 
-//----------------------------------------------------------------------------
-// LISTS ALL POSSIBLE LAYER HEIGHTS BY GIVING A WEIGHT VALUE TO EACH OF THEM.
-//----------------------------------------------------------------------------
 
+// List of all possible layer heights by giving a weight to each of them
 void list_candidate_layers(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -427,20 +383,16 @@ void list_candidate_layers(void)
 	return;
 }
 
-//----------------------------------------------------------------------------
-// REQUIRED FUNCTION FOR QSORT FUNCTION TO WORK
-//----------------------------------------------------------------------------
 
+// Simple wrap for quick sort
 int compute_layer_list(const void* i, const void* j)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
 	return *(long int*)i - *(long int*)j;
 }
 
-//----------------------------------------------------------------------------
-// PACKS THE BOXES FOUND AND ARRANGES ALL VARIABLES AND RECORDS PROPERLY
-//----------------------------------------------------------------------------
 
+// Pack all boxes and right record all records and vars
 int pack_layer(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -760,11 +712,8 @@ int pack_layer(void)
 	return 0;
 }
 
-//----------------------------------------------------------------------------
-// FINDS THE MOST PROPER LAYER HIGHT BY LOOKING AT THE UNPACKED BOXES AND THE
-// REMAINING EMPTY SPACE AVAILABLE
-//----------------------------------------------------------------------------
 
+// Find the most suitable layer height by looking at unpacked boxrs and at remaining free space
 int find_layer(short int thickness)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -826,11 +775,8 @@ int find_layer(short int thickness)
 	return 0;
 }
 
-//----------------------------------------------------------------------------
-// FINDS THE MOST PROPER BOXES BY LOOKING AT ALL SIX POSSIBLE ORIENTATIONS,
-// EMPTY SPACE GIVEN, ADJACENT BOXES, AND PALLET LIMITS
-//----------------------------------------------------------------------------
 
+// Find the most prober boxes by looking at possible orientations, empty space, adj. boxes and pallet limits
 void find_box(short int hmx, short int hy, short int hmy, short int hz, short int hmz)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -848,20 +794,13 @@ void find_box(short int hmx, short int hy, short int hmy, short int hz, short in
 		if (x > all_boxes) return;
 		analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim1, boxlist[x].dim2, boxlist[x].dim3);
 		if ((boxlist[x].dim1 == boxlist[x].dim3) && (boxlist[x].dim3 == boxlist[x].dim2)) continue;
-		//analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim1, boxlist[x].dim3, boxlist[x].dim2);
-		analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim2, boxlist[x].dim1, boxlist[x].dim3);
-		//analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim2, boxlist[x].dim3, boxlist[x].dim1);
-		//analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim3, boxlist[x].dim1, boxlist[x].dim2);
-		//analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim3, boxlist[x].dim2, boxlist[x].dim1);
-
+		analyze_box(hmx, hy, hmy, hz, hmz, boxlist[x].dim3, boxlist[x].dim2, boxlist[x].dim1);
+		// If need 6 variants of orientation, need to add at this place some rules
 	}
 }
 
-//----------------------------------------------------------------------------
-// ANALYZES EACH UNPACKED BOX TO FIND THE BEST FITTING ONE TO THE EMPTY SPACE
-// GIVEN
-//----------------------------------------------------------------------------
 
+// Analys each upacked box to find best place to the empty space
 void analyze_box(short int hmx, short int hy, short int hmy, short int hz, short int hmz, short int dim1, short int dim2, short int dim3)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -936,10 +875,8 @@ void analyze_box(short int hmx, short int hy, short int hmy, short int hz, short
 	}
 }
 
-//----------------------------------------------------------------------------
-// FINDS THE FIRST TO BE PACKED GAP IN THE LAYER EDGE
-//----------------------------------------------------------------------------
 
+// Find first to be packed gap in the layer edge 
 void find_smallest_z(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -956,11 +893,8 @@ void find_smallest_z(void)
 	return;
 }
 
-//----------------------------------------------------------------------------
-// AFTER FINDING EACH BOX, THE CANDIDATE BOXES AND THE CONDITION OF THE LAYER
-// ARE EXAMINED
-//----------------------------------------------------------------------------
 
+// Check candidate boxes and the condition of the layer after finding box
 void check_if_found(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -1045,10 +979,8 @@ void check_if_found(void)
 	return;
 }
 
-//----------------------------------------------------------------------------
-// AFTER PACKING OF EACH BOX, 100% PACKING CONDITION IS CHECKED
-//----------------------------------------------------------------------------
 
+// Check 100% condition after packing of each box
 void volume_check(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -1071,11 +1003,8 @@ void volume_check(void)
 	return;
 }
 
-//----------------------------------------------------------------------------
-// DATA FOR THE VISUALIZATION PROGRAM IS WRITTEN TO THE ".~3d" FILE AND THE
-// LIST OF UNPACKED BOXES IS MERGED TO THE END OF THE REPORT FILE
-//----------------------------------------------------------------------------
 
+// Write ".~3d" file report
 void write_visualization_data_file(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -1123,11 +1052,7 @@ void write_visualization_data_file_not_packed(void)
 }
 
 
-//----------------------------------------------------------------------------
-// TRANSFORMS THE FOUND COORDINATE SYSTEM TO THE ONE ENTERED BY THE USER AND
-// WRITES THEM TO THE REPORT FILE
-//----------------------------------------------------------------------------
-
+// Simple version of report (from original document) and transform found coord. sys. to entered by user
 void write_boxlist_file(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -1138,58 +1063,6 @@ void write_boxlist_file(void)
 	char str_pack_x[5], str_pack_y[5], str_pack_z[5];
 
 	short int x, y, z, b_x, b_y, b_z;
-
-	/*switch (best_variant)
-	{
-	case 1:
-		x = boxlist[current_box_i].co_x;
-		y = boxlist[current_box_i].co_y;
-		z = boxlist[current_box_i].co_z;
-		bx = boxlist[current_box_i].pack_x;
-		by = boxlist[current_box_i].pack_y;
-		bz = boxlist[current_box_i].pack_z;
-		break;
-	case 2:
-		x = boxlist[current_box_i].co_z;
-		y = boxlist[current_box_i].co_y;
-		z = boxlist[current_box_i].co_x;
-		bx = boxlist[current_box_i].pack_z;
-		by = boxlist[current_box_i].pack_y;
-		bz = boxlist[current_box_i].pack_x;
-		break;
-	case 3:
-		x = boxlist[current_box_i].co_y;
-		y = boxlist[current_box_i].co_z;
-		z = boxlist[current_box_i].co_x;
-		bx = boxlist[current_box_i].pack_y;
-		by = boxlist[current_box_i].pack_z;
-		bz = boxlist[current_box_i].pack_x;
-		break;
-	case 4:
-		x = boxlist[current_box_i].co_y;
-		y = boxlist[current_box_i].co_x;
-		z = boxlist[current_box_i].co_z;
-		bx = boxlist[current_box_i].pack_y;
-		by = boxlist[current_box_i].pack_x;
-		bz = boxlist[current_box_i].pack_z;
-		break;
-	case 5:
-		x = boxlist[current_box_i].co_x;
-		y = boxlist[current_box_i].co_z;
-		z = boxlist[current_box_i].co_y;
-		bx = boxlist[current_box_i].pack_x;
-		by = boxlist[current_box_i].pack_z;
-		bz = boxlist[current_box_i].pack_y;
-		break;
-	case 6:
-		x = boxlist[current_box_i].co_z;
-		y = boxlist[current_box_i].co_x;
-		z = boxlist[current_box_i].co_y;
-		bx = boxlist[current_box_i].pack_z;
-		by = boxlist[current_box_i].pack_x;
-		bz = boxlist[current_box_i].pack_y;
-		break;
-	}*/
 
 	// sick!
 	switch (best_variant)
@@ -1203,12 +1076,12 @@ void write_boxlist_file(void)
 		b_z = boxlist[current_box_i].pack_z;
 		break;
 	case 2:
-		x = boxlist[current_box_i].co_y;
-		y = boxlist[current_box_i].co_x;
-		z = boxlist[current_box_i].co_z;
-		b_x = boxlist[current_box_i].pack_y;
-		b_y = boxlist[current_box_i].pack_x;
-		b_z = boxlist[current_box_i].pack_z;
+		x = boxlist[current_box_i].co_z;
+		y = boxlist[current_box_i].co_y;
+		z = boxlist[current_box_i].co_x;
+		b_x = boxlist[current_box_i].pack_z;
+		b_y = boxlist[current_box_i].pack_y;
+		b_z = boxlist[current_box_i].pack_x;
 		break;
 	}
 
@@ -1234,11 +1107,8 @@ void write_boxlist_file(void)
 	return;
 }
 
-//----------------------------------------------------------------------------
-// USING THE PARAMETERS FOUND, PACKS THE BEST SOLUTION FOUND AND REPORS TO THE
-// CONSOLE AND TO A TEXT FILE
-//----------------------------------------------------------------------------
 
+// Create all versions of report and print in console simplify result
 void report_results(void)
 {
 #pragma comment(linker, "/EXPORT:" __FUNCTION__"=" __FUNCDNAME__)
@@ -1272,7 +1142,7 @@ void report_results(void)
 		pallet_x = xx; pallet_y = yy; pallet_z = zz;
 		break;
 	case 2:
-		pallet_x = yy; pallet_y = xx; pallet_z = zz;
+		pallet_x = zz; pallet_y = yy; pallet_z = xx;
 		break;
 	}
 
@@ -1288,7 +1158,7 @@ void report_results(void)
 	sprintf(str_p_y, "%d", pallet_y);
 	sprintf(str_p_z, "%d", pallet_z);
 
-	// Some terrible json formatter, just for science (mvp)
+	// Some terrible json formatter, just for science (sorry for that, mvp)
 	fprintf(visualizer_file, "{\n \"pallet\" : {\n \"pallet_x\" : %5s,\n \"pallet_y\" : %5s,\n \"pallet_z\" : %5s\n },\n \"boxes\" : [\n ", str_p_x, str_p_y, str_p_z);
 	strcat(filename, ".out");
 
@@ -1302,6 +1172,7 @@ void report_results(void)
 	pallet_volume_used_percentage = best_solution_volume * 100 / total_pallet_volume;
 	calc_time = difftime(finish, start);
 
+	// Simple report from original document
 	fprintf(report_output_file, "ELAPSED TIME                                          : Almost %.0f sec\n", calc_time);
 	fprintf(report_output_file, "TOTAL NUMBER OF ITERATIONS DONE                       : %d\n", number_of_iterations);
 	fprintf(report_output_file, "BEST SOLUTION FOUND AT ITERATION                      : %d OF VARIANT: %d\n", best_iteration, best_variant);
@@ -1382,6 +1253,8 @@ void report_results(void)
 	fclose(report_output_file);
 	fprintf(visualizer_file, "[]\n ]\n}");
 	fclose(visualizer_file);
+
+	// Console report
 	printf("\nPACKED BOXES IN PALLET\n");
 	printf("  No.    Size (3 Dim);      Corner Coords;     Axis Lenght;   Weight\n");
 	for (n = 1; n <= all_boxes; n++)
