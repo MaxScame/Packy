@@ -1,5 +1,6 @@
 # Packy📦
 
+> This file is used to generate in PDF, which causes problems with the markup of images. Sorry
 <img src="doc/packy_logo.png" style="zoom:7%;" />
 
 3D Bin Packing Algorithm, based on [AB-AFIT](doc/AirForceBinPacking.pdf) with some changes for a specific task. 
@@ -13,9 +14,9 @@ Track: from Partner *BoschRexroth*.
 
 - Modified EB-AFIT Pallet Loading Algorithm (No box flip on the side or upside down, support SKU and limited weight support )
 - Simple *JSON* export for robots🤖 and *Excel* document for human👷🏽
-- **No **platform dependencies
-- **No **dependence on third-party libraries
-- **No **dependencies on the compiler (library *C* code can be compiled by any compiler)
+- **No** platform dependencies
+- **No** dependence on third-party libraries
+- **No** dependencies on the compiler (library *C* code can be compiled by any compiler)
 
 ## Usage
 
